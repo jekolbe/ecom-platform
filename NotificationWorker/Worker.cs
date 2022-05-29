@@ -72,16 +72,16 @@ public class Worker : BackgroundService
 
             try
             {
-                var user = JsonSerializer.Deserialize<Confirmation>(message);
-                // TODO: Add user email to model
-                _logger.LogInformation($"Sending confirmation for user {user.FirstName} {user.LastName} confirmation email to [].");
+                var user = JsonSerializer.Deserialize<Message>(message);
+                _logger.LogInformation($"Sending confirmation for user {user.FirstName} {user.LastName} confirmation email to [{user.EmailAddress}].");
 
-                // simulate an async email process
-                await Task.Delay(new Random().Next(1, 3) * 1000, stoppingToken);
-                // send actual email
-                var emailData = new EmailData("test@contoso.com", "Max", "Subject Line", "Body");
-                var emailSent = _emailService.SendEmail(emailData);
-                _logger.LogInformation($"E-mail sent successfully {emailSent}");
+                var emailData = new EmailData(
+                    user.EmailAddress,
+                    user.FirstName,
+                    $"Your account has been created",
+                    $"Your user with email address {user.EmailAddress} has been created"
+                );
+                _emailService.SendEmail(emailData);
 
                 _logger.LogInformation($"Confirmation email for user {user.FirstName} {user.LastName} sent.");
                 _channel.BasicAck(ea.DeliveryTag, false);

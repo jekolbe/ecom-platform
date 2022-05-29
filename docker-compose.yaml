@@ -26,3 +26,10 @@ services:
     volumes:
       - ./rabbitmq/etc/definitions.json:/etc/rabbitmq/definitions.json
       - ./rabbitmq/etc/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+  notification-worker:
+    build: ./NotificationWorker
+    environment:
+      - RABBIT_HOSTNAME=message-broker
+    depends_on:
+      - message-broker
+    restart: on-failure

@@ -12,6 +12,9 @@ services:
       - 5000:80
     environment:
       - UserDatabase__ConnectionString=mongodb://mongo:27017
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - RABBIT_HOSTNAME=message-broker
     depends_on:
       - mongo
       - message-broker
@@ -20,3 +23,6 @@ services:
     ports:
       - 5672:5672
       - 15672:15672
+    volumes:
+      - ./rabbitmq/etc/definitions.json:/etc/rabbitmq/definitions.json
+      - ./rabbitmq/etc/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf

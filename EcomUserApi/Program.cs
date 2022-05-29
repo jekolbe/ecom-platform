@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using EcomUserApi.Models;
 using EcomUserApi.Services;
+using EcomUserApi.RabbitMQ;
+using RabbitMQ.Client;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +15,17 @@ builder.Services.Configure<UserDatabaseSettings>(
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<UserService>();
+var rabbitHostName = Environment.GetEnvironmentVariable("RABBIT_HOSTNAME");
+var connectionFactory = new ConnectionFactory
+{
+    HostName = rabbitHostName ?? "localhost",
+    Port = 5672,
+    UserName = "producer",
+    Password = "producer"
+};
+var rabbitMqConnection = connectionFactory.CreateConnection();
+builder.Services.AddSingleton(rabbitMqConnection);
+builder.Services.AddSingleton<IRabbitMQClient, RabbitMQClient>();
 
 var app = builder.Build();
 

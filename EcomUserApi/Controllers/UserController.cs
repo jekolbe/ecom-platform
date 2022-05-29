@@ -2,11 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Text.Json;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using EcomUserApi.Models;
 using EcomUserApi.Services;
+using EcomUserApi.RabbitMQ;
 
 namespace EcomUserApi.Controllers;
 
@@ -15,9 +17,17 @@ namespace EcomUserApi.Controllers;
 public class UserController : ControllerBase
 {
     private readonly UserService _userService;
+    private readonly ILogger<UserController> _logger;
+    private static readonly List<User> Users = new List<User>();
+    private readonly IRabbitMQClient _rabbitMqClient;
 
-    public UserController(UserService userService) =>
+    public UserController(UserService userService, ILogger<UserController> logger, IRabbitMQClient rabbitMQClient)
+    {
         _userService = userService;
+        _rabbitMqClient = rabbitMQClient;
+        _logger = logger;
+    }
+
 
     [HttpGet]
     public async Task<List<User>> Get() =>
@@ -40,6 +50,11 @@ public class UserController : ControllerBase
     public async Task<IActionResult> Post(User newUser)
     {
         await _userService.CreateAsync(newUser);
+
+        var payload = JsonSerializer.Serialize(newUser);
+
+        _logger.LogInformation($"New user created: {payload}");
+        _rabbitMqClient.Publish("user.action", "user.created", payload);
 
         return CreatedAtAction(nameof(Get), new { id = newUser.Id }, newUser);
     }

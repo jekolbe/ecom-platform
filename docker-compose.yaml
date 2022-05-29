@@ -30,6 +30,8 @@ services:
     build: ./NotificationWorker
     environment:
       - RABBIT_HOSTNAME=message-broker
+      - EmailSettings__Host=smtp-server
+      - EmailSettings__Port=2500
     depends_on:
       - message-broker
     restart: on-failure

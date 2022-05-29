@@ -1,15 +1,11 @@
 using System.Text;
 using System.Text.Json;
-using System;
-using System.Net;
-using System.Net.Mail;
-using System.Net.Mime;
-using System.Threading;
 using System.ComponentModel;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using RabbitMQ.Client.Exceptions;
 using NotificationWorker.Models;
+using NotificationWorker.Services;
 
 namespace NotificationWorker;
 
@@ -21,10 +17,12 @@ public class Worker : BackgroundService
     private IModel _channel;
     private const string QueueName = "notification_users_q";
     static bool mailSent = false;
+    IEmailService _emailService = null;
 
-    public Worker(ILogger<Worker> logger)
+    public Worker(ILogger<Worker> logger, IEmailService emailService)
     {
         _logger = logger;
+        _emailService = emailService;
     }
 
     public override Task StartAsync(CancellationToken cancellationToken)
@@ -78,18 +76,12 @@ public class Worker : BackgroundService
                 // TODO: Add user email to model
                 _logger.LogInformation($"Sending confirmation for user {user.FirstName} {user.LastName} confirmation email to [].");
 
-                await Task.Delay(new Random().Next(1, 3) * 1000, stoppingToken); // simulate an async email process
-                // send email
-                SmtpClient smtpClient = new SmtpClient("smtp-server", 2500);
-                MailAddress from = new MailAddress("jane@contoso.com", "Jane " + (char)0xD8 + " Clayton", System.Text.Encoding.UTF8);
-                MailAddress to = new MailAddress("ben@contoso.com");
-                MailMessage mailMessage = new MailMessage(from, to);
-                mailMessage.Body = "This is a test email message sent by an application. ";
-                smtpClient.SendCompleted += new
-                SendCompletedEventHandler(SendCompletedCallback);
-                string userState = "test message1";
-                smtpClient.SendAsync(mailMessage, userState);
-
+                // simulate an async email process
+                await Task.Delay(new Random().Next(1, 3) * 1000, stoppingToken);
+                // send actual email
+                var emailData = new EmailData("test@contoso.com", "Max", "Subject Line", "Body");
+                var emailSent = _emailService.SendEmail(emailData);
+                _logger.LogInformation($"E-mail sent successfully {emailSent}");
 
                 _logger.LogInformation($"Confirmation email for user {user.FirstName} {user.LastName} sent.");
                 _channel.BasicAck(ea.DeliveryTag, false);

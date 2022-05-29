@@ -33,3 +33,12 @@ services:
     depends_on:
       - message-broker
     restart: on-failure
+  smtp-server:
+    image: marcopas/docker-mailslurper
+    ports:
+      - 2500:2500
+      - 8080:8080
+      - 8085:8085
+    depends_on:
+      - notification-worker
+    restart: on-failure

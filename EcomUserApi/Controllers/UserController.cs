@@ -70,6 +70,10 @@ public class UserController : ControllerBase
         }
 
         updatedUser.Id = user.Id;
+        // how to prevent over-posting the right way?? ¯\_(ツ)_/¯
+        updatedUser.EmailAddress = user.EmailAddress;
+        updatedUser.IsEnrolled = user.IsEnrolled;
+        updatedUser.Title = user.Title;
 
         await _userService.UpdateAsync(id, updatedUser);
 

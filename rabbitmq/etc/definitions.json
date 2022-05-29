@@ -1,0 +1,100 @@
+{
+    "rabbit_version": "3.10.2",
+    "rabbitmq_version": "3.10.2",
+    "product_name": "RabbitMQ",
+    "product_version": "3.10.2",
+    "users": [
+        {
+            "name": "admin",
+            "password_hash": "TZzz4lS4qo4aLlUq2vX4CImRUi7Ckjj7w/TfBNB8PvYOysEZ",
+            "hashing_algorithm": "rabbit_password_hashing_sha256",
+            "tags": [
+                "administrator"
+            ],
+            "limits": {}
+        },
+        {
+            "name": "consumer",
+            "password_hash": "sithxxxzylCiyqPtRb9JuQrtPC1LZq/B7MYCXOVKjJ8qYh8P",
+            "hashing_algorithm": "rabbit_password_hashing_sha256",
+            "tags": [],
+            "limits": {}
+        },
+        {
+            "name": "producer",
+            "password_hash": "ibPpa3/avWnW9YdP2CzvE4XVr4bQweSC5KzORVl0ORC6PIG1",
+            "hashing_algorithm": "rabbit_password_hashing_sha256",
+            "tags": [],
+            "limits": {}
+        }
+    ],
+    "vhosts": [
+        {
+            "name": "/"
+        }
+    ],
+    "permissions": [
+        {
+            "user": "producer",
+            "vhost": "/",
+            "configure": "",
+            "write": "user*",
+            "read": ".*"
+        },
+        {
+            "user": "consumer",
+            "vhost": "/",
+            "configure": "",
+            "write": ".*",
+            "read": "user*"
+        },
+        {
+            "user": "admin",
+            "vhost": "/",
+            "configure": ".*",
+            "write": ".*",
+            "read": ".*"
+        }
+    ],
+    "topic_permissions": [],
+    "parameters": [],
+    "global_parameters": [
+        {
+            "name": "internal_cluster_id",
+            "value": "rabbitmq-cluster-id-tqHsc75yd4Ef7S4y_Z1-uQ"
+        }
+    ],
+    "policies": [],
+    "queues": [
+        {
+            "name": "notification_users_q",
+            "vhost": "/",
+            "durable": true,
+            "auto_delete": false,
+            "arguments": {
+                "x-queue-type": "classic"
+            }
+        }
+    ],
+    "exchanges": [
+        {
+            "name": "user.action",
+            "vhost": "/",
+            "type": "direct",
+            "durable": true,
+            "auto_delete": false,
+            "internal": false,
+            "arguments": {}
+        }
+    ],
+    "bindings": [
+        {
+            "source": "user.action",
+            "vhost": "/",
+            "destination": "notification_users_q",
+            "destination_type": "queue",
+            "routing_key": "user.created",
+            "arguments": {}
+        }
+    ]
+}

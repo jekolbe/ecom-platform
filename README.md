@@ -11,9 +11,9 @@ The following schema represents the structure of the microservices.
 3. Run `docker-compose up`
 
 ## Posting data
-You can test the microservices by performing the following `POST` request:
-endpoint: `localhost:5000/api/user`
-body: 
+You can test the microservices by performing the following `POST` request:<br>
+endpoint: `localhost:5000/api/user`<br>
+body: <br>
 ```json
 {
     "FirstName": "Jon",
@@ -24,7 +24,11 @@ body:
     "title": "B.Sc."
 }
 ```
+Afterwards you can open `localhost:8080` to check if a confirmation e-mail has been sent
 
 ## Accessing RabbitMQ and SMTP server
 - You can access the RabbitMQ management interface by accessing `localhost:15672` and entering `admin` as user and password
-- You can access the SMTP server to see all incoming mails by accessing `localhost:8080` and entering
+- You can access the SMTP server to see all incoming mails by accessing `localhost:8080`
+
+## Swagger Documentation
+- You can access the Swagger Documentation via `localhost:5000/swagger`
